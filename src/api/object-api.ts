@@ -22,7 +22,7 @@ export function keys(obj: any): any {
     }
     return fail(
         process.env.NODE_ENV !== "production" &&
-            "'keys()' can only be used on observable objects and maps"
+        "'keys()' can only be used on observable objects and maps"
     )
 }
 
@@ -30,18 +30,37 @@ export function values<K, T>(map: ObservableMap<K, T>): ReadonlyArray<T>
 export function values<T>(ar: IObservableArray<T>): ReadonlyArray<T>
 export function values<T = any>(obj: T): ReadonlyArray<any>
 export function values(obj: any): string[] {
+    // if (isObservableObject(obj)) {
+    //     return keys(obj).map(key => obj[key])
+    // }
+    // if (isObservableMap(obj)) {
+    //     return keys(obj).map(key => obj.get(key))
+    // }
+    // if (isObservableArray(obj)) {
+    //     return obj.slice()
+    // }
+    return fail(
+        process.env.NODE_ENV !== "production" &&
+        "'values()' can only be used on observable objects, arrays and maps"
+    )
+}
+
+export function entries<K, T>(map: ObservableMap<K, T>): ReadonlyArray<T>
+export function entries<T>(ar: IObservableArray<T>): ReadonlyArray<T>
+export function entries<T = any>(obj: T): ReadonlyArray<any>
+export function entries(obj: any): string[][] {
     if (isObservableObject(obj)) {
-        return keys(obj).map(key => obj[key])
+        return keys(obj).map(key => [key, obj[key]])
     }
     if (isObservableMap(obj)) {
-        return keys(obj).map(key => obj.get(key))
+        return keys(obj).map(key => [key, obj.get(key)])
     }
     if (isObservableArray(obj)) {
-        return obj.slice()
+        return obj.map((key, index) => [index.toString(), key])
     }
     return fail(
         process.env.NODE_ENV !== "production" &&
-            "'values()' can only be used on observable objects, arrays and maps"
+        "'values()' can only be used on observable objects, arrays and maps"
     )
 }
 
@@ -81,7 +100,7 @@ export function set(obj: any, key: any, value?: any): void {
     } else {
         return fail(
             process.env.NODE_ENV !== "production" &&
-                "'set()' can only be used on observable objects, arrays and maps"
+            "'set()' can only be used on observable objects, arrays and maps"
         )
     }
 }
@@ -91,7 +110,7 @@ export function remove<T>(obj: IObservableArray<T>, index: number)
 export function remove<T extends Object>(obj: T, key: string)
 export function remove(obj: any, key: any): void {
     if (isObservableObject(obj)) {
-        ;((obj as any) as IIsObservableObject).$mobx.remove(key)
+        ; ((obj as any) as IIsObservableObject).$mobx.remove(key)
     } else if (isObservableMap(obj)) {
         obj.delete(key)
     } else if (isObservableArray(obj)) {
@@ -101,7 +120,7 @@ export function remove(obj: any, key: any): void {
     } else {
         return fail(
             process.env.NODE_ENV !== "production" &&
-                "'remove()' can only be used on observable objects, arrays and maps"
+            "'remove()' can only be used on observable objects, arrays and maps"
         )
     }
 }
@@ -122,7 +141,7 @@ export function has(obj: any, key: any): boolean {
     } else {
         return fail(
             process.env.NODE_ENV !== "production" &&
-                "'has()' can only be used on observable objects, arrays and maps"
+            "'has()' can only be used on observable objects, arrays and maps"
         )
     }
 }
@@ -141,7 +160,7 @@ export function get(obj: any, key: any): any {
     } else {
         return fail(
             process.env.NODE_ENV !== "production" &&
-                "'get()' can only be used on observable objects, arrays and maps"
+            "'get()' can only be used on observable objects, arrays and maps"
         )
     }
 }
